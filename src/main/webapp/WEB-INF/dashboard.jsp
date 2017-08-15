@@ -13,11 +13,17 @@
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         <input type="submit" value="Logout" />
     </form>
+    
 	<h1>Welcome <c:out value="${currentUser.firstName}"/>!</h1>
+	
 	<p>First Name: <c:out value="${currentUser.firstName}"/></p>
 	<p>Last Name: <c:out value="${currentUser.lastName}"/></p>
-	<p>Email: <c:out value="${currentUser.email}"/></p>
+	<p>Email: <c:out value="${currentUser.username}"/></p>
 	<p>Sign up date: <fmt:formatDate pattern="MMMM d, yyyy" value="${currentUser.createdAt}"/></p>
 	<p>Last sign in: <fmt:formatDate pattern="MMMM d, yyyy" value="${lastLogin}"/></p>
+	
+	<c:if test="${currentUser.getRoles().contains(adminRole)}">
+	<p><a href="/admin">Admin dashboard</a></p>
+	</c:if>
 </body>
 </html>

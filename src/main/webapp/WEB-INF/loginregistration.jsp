@@ -18,8 +18,8 @@
     </c:if>
     <form method="POST" action="/">
         <p>
-            <label for="email">Email</label>
-            <input type="text" id="email" name="username"/>
+            <label for="username">Email</label>
+            <input type="text" id="username" name="username"/>
         </p>
         <p>
             <label for="password">Password</label>
@@ -33,8 +33,8 @@
     <p><form:errors path="user.*"/></p>
     <form:form method="POST" action="/registration" modelAttribute="user">
         <p>
-            <form:label path="email">Email:</form:label>
-            <form:input path="email"/>
+            <form:label path="username">Email:</form:label>
+            <form:input path="username"/>
         </p>
         <p>
             <form:label path="firstName">First Name:</form:label>

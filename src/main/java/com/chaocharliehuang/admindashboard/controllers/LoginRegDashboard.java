@@ -2,6 +2,7 @@ package com.chaocharliehuang.admindashboard.controllers;
 
 import java.security.Principal;
 import java.util.Date;
+import java.util.List;
 
 import javax.validation.Valid;
 
@@ -10,6 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -52,16 +54,49 @@ public class LoginRegDashboard {
 	    if (result.hasErrors()) {
 	        return "loginregistration.jsp";
 	    } else {
-		    userService.saveWithUserRole(user);
-		    return "redirect:/";
+	    		Role adminRole = userService.getRoleById(Long.valueOf(2));
+	    		List<User> admins = userService.getAllUsersByRole(adminRole);
+	    		if (admins.isEmpty()) {
+	    			userService.saveUserWithAdminRole(user);
+	    		} else {
+	    			userService.saveWithUserRole(user);
+	    		}
+    			return "redirect:/";
 	    }
 	}
 	
 	@GetMapping("/dashboard")
 	public String home(Principal principal, Model model) {
-		String email = principal.getName();
-		model.addAttribute("currentUser", userService.findByEmail(email));
+		String username = principal.getName();
+		model.addAttribute("currentUser", userService.findByUsername(username));
 		model.addAttribute("lastLogin", new Date());
+		model.addAttribute("adminRole", userService.getRoleById(Long.valueOf(2)));
 		return "dashboard.jsp";
+	}
+	
+	@GetMapping("/admin")
+	public String adminPage(Principal principal, Model model) {
+		String username = principal.getName();
+		model.addAttribute("currentUser", userService.findByUsername(username));
+		model.addAttribute("users", userService.getAllUsers());
+		model.addAttribute("adminRole", userService.getRoleById(Long.valueOf(2)));
+		return "adminPage.jsp";
+	}
+	
+	@GetMapping("/admin/delete/{id}")
+	public String deleteUser(@PathVariable("id") Long id) {
+		userService.deleteUser(id);
+		return "redirect:/admin";
+	}
+	
+	@GetMapping("/admin/makeadmin/{id}")
+	public String makeAdmin(@PathVariable("id") Long id) {
+		User user = userService.getUserById(id);
+		List<Role> roles = user.getRoles();
+		Role adminRole = userService.getRoleById(Long.valueOf(2));
+		roles.add(adminRole);
+		user.setRoles(roles);
+		userService.updateUser(user);
+		return "redirect:/admin";
 	}
 }
